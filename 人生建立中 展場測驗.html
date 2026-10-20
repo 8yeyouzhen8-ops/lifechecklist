@@ -1,0 +1,440 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>人生建立中 展場測驗</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Doto:wght@700;900&family=Noto+Sans+TC:wght@400;500;700;900&family=Space+Mono:wght@400;700&display=swap">
+<style>
+/* Layout: one-screen kiosk app. Black terminal standby → white punch-card quiz → white result sheet with a 2-axis map. Single committed look from the team's five brand colors. */
+:root {
+  --white: #FFFFFF; --black: #000000; --gray: #BBBCBC; --earth: #69625B; --lime: #BBF42F;
+  --ink-soft: #2A2724; --paper-dot: #E4E4E3;
+  --f-dot: 'Doto', 'Space Mono', monospace;
+  --f-mono: 'Space Mono', 'Courier New', monospace;
+  --f-body: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+  color-scheme: light;
+}
+html, body { height: 100%; }
+body { background: var(--white); color: var(--black); font-family: var(--f-body); margin: 0; }
+* { box-sizing: border-box; }
+button { font-family: inherit; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--lime); outline-offset: 3px; }
+[hidden] { display: none !important; }
+.screen { min-height: 100%; padding-block: clamp(20px, 4vh, 48px); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.wrap { max-width: 1080px; margin: 0 auto; display: flex; flex-direction: column; gap: clamp(16px, 3vh, 32px); }
+.mono { font-family: var(--f-mono); letter-spacing: .14em; text-transform: uppercase; font-size: 12px; }
+.dots-bg { background-image: radial-gradient(var(--paper-dot) 1.6px, transparent 1.7px); background-size: 14px 14px; }
+
+/* STANDBY */
+#standby { background: var(--black); color: var(--lime); display: flex; align-items: center; }
+#standby .wrap { width: 100%; }
+.term { border: 1px solid #2c2c2c; border-radius: 14px; background: #0a0a0a; padding: clamp(18px, 3vw, 32px); display: flex; flex-direction: column; gap: 20px; }
+.term-top { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; color: var(--earth); }
+.big-dot { font-family: var(--f-dot); font-weight: 900; line-height: .95; letter-spacing: .02em; }
+#standby h1 { font-size: clamp(56px, 12vw, 150px); margin: 0; color: var(--lime); }
+.leds { display: flex; gap: 10px; }
+.leds i { width: 10px; height: 10px; border-radius: 50%; background: #333; }
+.leds i.on { background: var(--lime); box-shadow: 0 0 8px var(--lime); }
+.boot { border-top: 1px solid #2c2c2c; padding-top: 18px; min-height: 9.5em; font-size: clamp(16px, 2vw, 21px); line-height: 1.75; color: var(--lime); }
+.boot p { margin: 0; }
+.title-zh { font-size: clamp(32px, 6vw, 64px); font-weight: 900; color: var(--white); margin: 0; letter-spacing: .06em; }
+.sub-zh { color: var(--gray); font-size: clamp(15px, 1.8vw, 19px); margin: 6px 0 0; }
+.row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+.btn { border: 2px solid var(--black); background: var(--white); color: var(--black); font-weight: 700; font-size: 18px; padding: 14px 26px; border-radius: 999px; }
+.btn.lime { background: var(--lime); border-color: var(--lime); color: var(--black); }
+.btn.ghost-dark { background: transparent; border-color: var(--earth); color: var(--gray); }
+.btn:hover { transform: translateY(-1px); }
+
+/* QUIZ */
+#quiz .wrap { min-height: calc(100vh - 96px); padding-bottom: 120px; }
+.qhead { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.holes { display: flex; gap: 8px; flex-wrap: wrap; }
+.holes i { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--gray); }
+.holes i.done { background: var(--black); border-color: var(--black); }
+.holes i.now { border-color: var(--black); box-shadow: 0 0 0 4px var(--lime); }
+.axis-tag { color: var(--earth); }
+.qnum { font-family: var(--f-dot); font-weight: 900; font-size: clamp(64px, 11vw, 120px); line-height: .9; color: var(--black); }
+.qtext { font-size: clamp(26px, 4.2vw, 46px); font-weight: 900; line-height: 1.3; margin: 0; text-wrap: balance; }
+.opts { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.opt { text-align: left; border: 2px solid var(--black); background: var(--white); border-radius: 16px; padding: 18px 20px 18px 62px; font-size: clamp(17px, 2vw, 21px); line-height: 1.5; position: relative; min-height: 84px; color: var(--black); }
+.opt::before { content: ""; position: absolute; left: 20px; top: 50%; width: 24px; height: 24px; margin-top: -12px; border-radius: 50%; border: 2px solid var(--black); }
+.opt:hover { background: #F6FDE6; }
+.opt.picked { background: var(--lime); }
+.opt.picked::before { background: var(--black); }
+.opt:disabled { cursor: default; }
+.opt:disabled:not(.picked) { opacity: .35; }
+.roast { position: fixed; left: 50%; bottom: max(16px, env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); width: min(720px, calc(100% - 32px)); z-index: 10; background: var(--black); color: var(--lime); border: 2px solid var(--lime); border-radius: 14px; padding: 16px 20px; font-size: clamp(18px, 2.2vw, 24px); font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,.35); animation: pop .2s ease-out; }
+@keyframes pop { from { opacity: 0; transform: translate(-50%, 12px); } }
+.roast span { color: var(--gray); font-family: var(--f-mono); font-size: 12px; letter-spacing: .14em; display: block; margin-bottom: 4px; font-weight: 400; }
+
+/* CALC */
+#calc { background: var(--black); color: var(--lime); display: flex; align-items: center; }
+#calc .wrap { width: 100%; }
+#calc .boot { border: none; }
+
+/* RESULT */
+.res-hero { display: grid; grid-template-columns: 1.2fr 1fr; gap: clamp(16px, 3vw, 40px); align-items: stretch; }
+.res-id { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.code { font-family: var(--f-dot); font-weight: 900; font-size: clamp(28px, 4vw, 44px); color: var(--earth); }
+.res-name { font-size: clamp(48px, 9vw, 104px); font-weight: 900; line-height: 1.05; margin: 0; letter-spacing: .02em; }
+.tagline { font-size: clamp(20px, 2.6vw, 28px); font-weight: 700; margin: 0; }
+.tagline mark { background: var(--lime); padding: 0 .2em; }
+.emblem { display: flex; gap: 8px; }
+.emblem i { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--black); }
+.emblem i.on { background: var(--black); }
+.why { background: var(--black); color: var(--white); border-radius: 16px; padding: 18px 20px; font-size: 17px; line-height: 1.75; }
+.why b { color: var(--lime); }
+.mapbox { border: 2px solid var(--black); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 10px; background: var(--white); }
+.map { position: relative; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 31.25fr 31.25fr 37.5fr; aspect-ratio: 1 / 1.05; max-width: 100%; }
+.cell { border: 1px dashed var(--gray); display: flex; align-items: center; justify-content: center; text-align: center; font-size: 14px; font-weight: 700; color: var(--earth); padding: 4px; }
+.cell.me { background: #F1FCD6; color: var(--black); border: 2px solid var(--black); }
+.pin { position: absolute; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; background: var(--lime); border: 3px solid var(--black); box-shadow: 0 0 0 6px rgba(187,244,47,.35); }
+.axis-x, .axis-y { color: var(--earth); display: flex; justify-content: space-between; }
+.bars { display: grid; gap: 10px; }
+.bar { display: grid; grid-template-columns: 7.5em 1fr 3.2em; gap: 10px; align-items: center; font-size: 14px; font-weight: 700; }
+.bar .track { height: 12px; background: var(--paper-dot); border-radius: 99px; overflow: hidden; }
+.bar .track i { display: block; height: 100%; background: var(--black); }
+.bar .num { font-family: var(--f-mono); text-align: right; font-variant-numeric: tabular-nums; }
+.peers { border-top: 2px solid var(--black); padding-top: 14px; display: flex; gap: 16px; align-items: baseline; flex-wrap: wrap; }
+.peers .pct { font-family: var(--f-dot); font-weight: 900; font-size: clamp(48px, 7vw, 76px); line-height: 1; }
+.peers p { margin: 0; font-size: 17px; font-weight: 700; }
+.sheet { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 2px solid var(--black); border-radius: 16px; overflow: hidden; }
+.blk { padding: 20px; border-right: 1px solid var(--gray); border-bottom: 1px solid var(--gray); display: flex; flex-direction: column; gap: 10px; min-width: 0; background: var(--white); }
+.blk h3 { margin: 0; }
+.blk .mono { color: var(--earth); }
+.blk p { margin: 0; font-size: 16px; line-height: 1.75; }
+.blk.wide { grid-column: span 2; }
+.blk.dark { background: var(--black); color: var(--white); }
+.blk.dark .mono { color: var(--lime); }
+.stat { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; font-size: 16px; }
+.stars { font-family: var(--f-mono); letter-spacing: .1em; }
+.stars b { color: var(--black); }
+.stars span { color: var(--gray); }
+.skill-name { font-size: 20px; font-weight: 900; }
+.soup { font-size: clamp(20px, 2.6vw, 26px); font-weight: 900; line-height: 1.5; color: var(--lime); }
+.chip { display: inline-block; border: 2px solid var(--black); border-radius: 99px; padding: 2px 12px; font-weight: 700; font-size: 15px; }
+.cta { display: flex; gap: 12px; flex-wrap: wrap; justify-content: space-between; align-items: center; background: var(--lime); border-radius: 16px; padding: 18px 20px; }
+.cta p { margin: 0; font-weight: 900; font-size: 20px; }
+.reset-note { color: var(--earth); }
+
+/* ALL TYPES */
+.grid6 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.tcard { text-align: left; border: 2px solid var(--black); border-radius: 16px; padding: 18px; background: var(--white); display: flex; flex-direction: column; gap: 8px; color: var(--black); }
+.tcard:hover { background: #F6FDE6; }
+.tcard .code { font-size: 26px; }
+.tcard h3 { margin: 0; font-size: 26px; font-weight: 900; }
+.tcard p { margin: 0; font-size: 15px; color: var(--earth); line-height: 1.6; }
+.toplink { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.link { background: none; border: none; font-weight: 700; font-size: 16px; text-decoration: underline; text-underline-offset: 4px; color: var(--black); padding: 6px 0; }
+
+@media (max-width: 760px) {
+  .opts, .res-hero, .grid6 { grid-template-columns: 1fr; }
+  .sheet { grid-template-columns: 1fr; }
+  .blk.wide { grid-column: auto; }
+  .qnum { font-size: 48px; }
+  .qtext { font-size: 24px; }
+  .opt { min-height: 0; padding: 14px 16px 14px 54px; }
+  .opt::before { left: 16px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<!-- STANDBY -->
+<section id="standby" class="screen">
+  <div class="wrap">
+    <div class="term">
+      <div class="term-top mono"><span>LIFE-CLOCK MODEL 2026</span><span>SOCIAL TIME SYSTEM</span></div>
+      <h1 class="big-dot">STANDBY</h1>
+      <div class="leds" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div>
+        <p class="title-zh">人生建立中…</p>
+        <p class="sub-zh">10 題人生相容性檢測，測出你在社會這款遊戲裡的角色。請選你真的會做的，系統看得出來。</p>
+      </div>
+      <div class="boot" id="bootLines" aria-live="polite"></div>
+      <div class="row">
+        <button class="btn ghost-dark" id="toAll">查看六種人格</button>
+        <button class="btn lime" id="startBtn">按此登入人生 ▶</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<section id="quiz" class="screen dots-bg" hidden>
+  <div class="wrap">
+    <div class="qhead">
+      <div class="holes" id="holes" aria-hidden="true"></div>
+      <span class="mono axis-tag" id="axisTag"></span>
+    </div>
+    <div class="qnum" id="qNum">01</div>
+    <h2 class="qtext" id="qText"></h2>
+    <div class="opts" id="opts"></div>
+    <div class="roast" id="roast" hidden></div>
+  </div>
+</section>
+
+<!-- CALC -->
+<section id="calc" class="screen" hidden>
+  <div class="wrap">
+    <div class="term">
+      <div class="term-top mono"><span>LIFE-CLOCK MODEL 2026</span><span>PROCESSING</span></div>
+      <h1 class="big-dot" style="font-size:clamp(48px,10vw,120px);margin:0">LOADING…</h1>
+      <div class="boot" id="calcLines"></div>
+    </div>
+  </div>
+</section>
+
+<!-- RESULT -->
+<section id="result" class="screen dots-bg" hidden>
+  <div class="wrap" id="resultWrap"></div>
+</section>
+
+<!-- ALL TYPES -->
+<section id="all" class="screen dots-bg" hidden>
+  <div class="wrap">
+    <div class="toplink">
+      <span class="mono" style="color:var(--earth)">CHARACTER INDEX · 6 TYPES</span>
+      <button class="link" id="allBack">← 回到待機畫面</button>
+    </div>
+    <h2 class="qtext">六種人格，沒有哪一格比較好</h2>
+    <p style="margin:0;font-size:17px;line-height:1.75;max-width:46em">分類依據兩條軸：<b>大人經驗值</b>（實際扛了多少大人的事）和<b>劇本服從度</b>（多照著社會的標準攻略走）。兩條軸沒有好壞，成功人士不是終點，只是剛好落在「經驗多、很照劇本」的那一格。</p>
+    <div class="grid6" id="grid6"></div>
+  </div>
+</section>
+
+<script>
+const TYPES = {
+  baby: { no: 1, name: '社會小嬰兒', code: 'TYPE-01 BABY', tag: '剛登入人生，新手教學還沒看完。',
+    why: '你還沒真正上線，也還沒拿到社會的劇本。',
+    intro: '你還沒真正進到社會這款遊戲，很多大人的事都有人幫你處理，你也還沒被「幾歲該做什麼」綁住。你活在當下、好奇心旺盛，最大的壓力來源通常是別人問你：「那你以後要幹嘛？」',
+    stats: [['好奇心', 5], ['抗壓性', 1], ['賴床力', 5]],
+    skill: ['我還在探索自己', '消耗 0 MP，使親戚的追問暫停 3 秒。'],
+    weak: '被問「你都幾歲了」時，HP 直接歸零。', line: '「再說啦」「我問我媽」',
+    partner: ['veteran', '他會默默幫你處理一切。'], rival: ['winner', '他的存在本身就是一句「你看看人家」。'],
+    next: '第一次自己繳帳單', soup: '慢慢來沒關係，反正大人也是邊做邊學的。' },
+  cosplay: { no: 2, name: '初級裝大人', code: 'TYPE-02 COSPLAY', tag: '西裝穿上了，內心還在找媽媽。',
+    why: '經驗值還不多，但你很努力照著劇本演大人。',
+    intro: '你很清楚社會期待的大人長什麼樣子，也很努力照著演。只是經驗值還沒跟上，所以常常一邊點頭，一邊在心裡偷偷 Google。你不是假，你只是在練習。',
+    stats: [['假裝很懂', 5], ['點頭頻率', 4], ['內心慌張', 5]],
+    skill: ['假裝聽懂', '開會時點頭並重複對方最後三個字，展現專業社會化。'],
+    weak: '會議上被點名：「那你的看法呢？」', line: '「好的，我了解」（其實沒有）',
+    partner: ['npc', '他會教你怎麼看起來很正常。'], rival: ['trial', '一句「你真的想要這樣嗎？」就讓你破功。'],
+    next: '被交辦一件沒有人教過的事', soup: '每個大人都在 cosplay，你只是還沒拿到戲服尺寸而已。' },
+  trial: { no: 3, name: '試用期大人', code: 'TYPE-03 TRIAL', tag: '試用期三個月，已經想離職三次。',
+    why: '你已經上線，但一直懷疑這份劇本是不是你要的。',
+    intro: '帳單、工作、責任都開始找上門，你也接住了。但你一直在懷疑這份劇本：這真的是我要的嗎？你不太在乎別人走多快，但也還沒想好自己要往哪走，所以會偷偷打開求職網站。你不是逃避，你只是還在找更適合自己的地圖。',
+    stats: [['滑求職網站', 5], ['自我懷疑', 4], ['還在撐', 4]],
+    skill: ['職場草莓', '稍微被主管唸，就打開 104 求職。'],
+    weak: '看到同學在 IG 發升職公告。', line: '「好想離職……」',
+    partner: ['baby', '一起當不急的人。'], rival: ['winner', '他的五年計畫有備案，你的還在草稿。'],
+    next: '要不要轉職的那個晚上', soup: '試用期很長，但沒有人規定一定要轉正。' },
+  npc: { no: 4, name: '社會npc', code: 'TYPE-04 NPC', tag: '每天重複同一句台詞：「好的收到」。',
+    why: '你已經在社會裡跑了一陣子，大部分時候照著劇本走。',
+    intro: '準時上班、準時回訊息、準時累。穩定是你的超能力，你很少出包，也很少問為什麼。只是偶爾在捷運上會想：自己是不是活成了背景角色？',
+    stats: [['假裝很忙', 5], ['情緒穩定', 3], ['夢想值', 1]],
+    skill: ['自動回覆', '收到、好的、沒問題已練成肌肉記憶，消耗 0 MP，讓主管暫時滿意，冷卻時間 5 分鐘。'],
+    weak: '同學會上被問：「最近在忙什麼？」', line: '「好的收到」「都可以」',
+    partner: ['cosplay', '你是他的實境教學。'], rival: ['veteran', '他不照劇本卻活得很好，讓你有點動搖。'],
+    next: '一個沒有任何安排的連假', soup: '每天重複一樣的台詞也沒關係，主角也是要吃飯的。' },
+  veteran: { no: 5, name: '高級大人', code: 'TYPE-05 VETERAN', tag: '什麼都處理得來，除了自己的情緒。',
+    why: '你扛了很多大人的事，但用自己的方式扛，不太在乎標準劇本。',
+    intro: '帳單、麻煩事、別人的爛攤子，你都扛得起來。你不追標準答案，用自己的節奏在生活。你是大家的客服中心，唯一沒在服務的客人是你自己。',
+    stats: [['處理危機', 5], ['照顧別人', 5], ['照顧自己', 1]],
+    skill: ['極速運轉', '同時扛著房貸、車貸與高齡死線，維持極限營業微笑。副作用隔天腰痛，撒隆帕斯高手。'],
+    weak: '別人問：「那你自己還好嗎？」', line: '「沒事，我來」',
+    partner: ['baby', '你忍不住想照顧他。'], rival: ['npc', '他一說「都可以」，你就知道又是你要做。'],
+    next: '學會說「不要」', soup: '你已經很會當大人了，偶爾也可以當一下小孩。' },
+  winner: { no: 6, name: '成功人士', code: 'TYPE-06 WINNER', tag: '存款達標，睡眠不足。',
+    why: '你扛了很多，而且照著劇本拿到了高分。',
+    intro: '履歷漂亮、目標明確，連備案都有備案。親戚看到你都會說「你看看人家」。只是終點線好像一直往後移，你已經想不起來上次什麼都不做是什麼時候。',
+    stats: [['履歷漂亮', 5], ['社群形象', 5], ['睡眠時數', 1]],
+    skill: ['成功學輸出', '在 LinkedIn 發表「我是如何利用早上五點的時間改變人生的」。'],
+    weak: '放假時不知道自己要幹嘛。', line: '「下一個目標是……」',
+    partner: ['cosplay', '他是你最認真的粉絲。'], rival: ['baby', '他什麼都沒有，卻睡得比你好。'],
+    next: '一個沒有 KPI 的週末', soup: '贏了這一關很棒，但人生不是每一關都要贏。' }
+};
+const GRID = [['baby', 'cosplay'], ['trial', 'npc'], ['veteran', 'winner']];
+const ORDER = ['baby', 'cosplay', 'trial', 'npc', 'veteran', 'winner'];
+
+const QS = [
+  { a: 'e', q: '你的手機費、房租這些帳單，現在是誰在繳？', o: [
+    ['爸媽，我連帳單長怎樣都沒看過', 0, '無知是一種福氣。'],
+    ['手機費自己繳，其他家裡處理', 1, '半獨立，很合理。'],
+    ['大部分自己繳，偶爾月底求救', 2, '月底的你最誠實。'],
+    ['自己的繳完，還幫家裡繳一些', 3, '你是全家的提款機。']] },
+  { a: 'e', q: '需要打電話給客服或公家機關，你會？', o: [
+    ['請家人幫我打', 0, '家人是最好的代理人。'],
+    ['上網爬文一小時，拖到最後一天才打', 1, '電話恐懼症，確診。'],
+    ['自己打，但先打好草稿', 2, '專業的緊張。'],
+    ['直接打，順便幫朋友一起問', 3, '客服都記得你的聲音了。']] },
+  { a: 'e', q: '你手機裡最常跳出來的通知是？', o: [
+    ['遊戲和追劇更新', 0, '生活很單純，羨慕。'],
+    ['學校或打工群組', 1, '正在加載社會。'],
+    ['工作群組', 2, '下班後的上班。'],
+    ['工作群組、家族群組、社區群組，全部都要我回', 3, '你的手機比你還累。']] },
+  { a: 'e', q: '你家的冰箱裡有什麼？', o: [
+    ['冰箱是空的，我媽家有', 0, '你的冰箱在別人家。'],
+    ['飲料和零食，這樣不行嗎', 1, '可以，只是有點像便利商店。'],
+    ['外送剩菜和一瓶過期的醬料', 2, '那瓶醬料，比你的感情還長久。'],
+    ['備好的食材，我有在自己煮', 3, '冰箱都比你有規劃。']] },
+  { a: 'e', q: '你知道自己的健保卡在哪裡嗎？', o: [
+    ['我以為我媽幫我保管', 0, '你媽是你的雲端硬碟。'],
+    ['不知道，但需要的時候再說', 1, '生病的你會很辛苦。'],
+    ['大概知道，找得到', 2, '大概，是大人最常用的詞。'],
+    ['知道，放在固定的地方', 3, '健保卡比你還有歸屬感。']] },
+  { a: 's', q: '月底的你，通常處於什麼狀態？', o: [
+    ['我知道錢花在哪裡，但我更在乎它能幫我換到什麼生活', 0, '你在用自己的匯率生活。'],
+    ['薪水去哪了？我懷疑我的錢有自己的夢想', 1, '至少錢比你先找到夢想。'],
+    ['我有記帳，但偶爾會選擇性失明', 2, '帳本：我看見了，但我不說。'],
+    ['固定支出、儲蓄、娛樂費都有安排', 3, '理財書作者想認識你。']] },
+  { a: 's', q: '有人問你「五年後的計畫」，你的反應是？', o: [
+    ['我笑了，然後沉默', 0, '沉默，也是一種回答。'],
+    ['我說「走一步算一步」然後岔開話題', 1, '轉移話題，大人必修技能。'],
+    ['我說了一個聽起來合理的答案', 2, '面試官會很滿意。'],
+    ['我有規劃，而且有備案', 3, '連備案都有備案。']] },
+  { a: 's', q: '突然多出三天完全自由的時間，你會？', o: [
+    ['睡到自然醒，想做什麼就做什麼', 0, '這才叫放假。'],
+    ['把積欠的雜事處理完，讓生活重新恢復秩序', 1, '放假是用來還債的。'],
+    ['安排一個一直想完成的計畫', 2, '連放假都在推進度。'],
+    ['沒有行程反而有點不安，還是照平常的節奏生活', 3, '你的生理時鐘有打卡功能。']] },
+  { a: 's', q: '看到同年齡的人升職、買房、結婚或創業，你的第一反應是？', o: [
+    ['很好啊，但我不一定想過一樣的生活', 0, '你有自己的地圖。'],
+    ['恭喜他，我還是先把今天的事情做完', 1, '專心過關，很穩。'],
+    ['先研究他怎麼做到的，再看看能不能用在自己身上', 2, '人生攻略，抄一下不犯法。'],
+    ['我是不是落後了？人生進度條在哪裡看？', 3, '進度條不存在，但你一直在找。']] },
+  { a: 's', q: '你覺得「成功」是？', o: [
+    ['今天有好好睡覺就算成功', 0, '那你今天成功了嗎？'],
+    ['做自己喜歡的事，同時不餓死', 1, '難度最高的那種成功。'],
+    ['我還在定義這個詞', 1, '定義中，請稍候。'],
+    ['財務自由、家庭穩定、社會地位', 3, '標準答案，社會給你一百分。']] }
+];
+const ROAST_MS = 2200, IDLE_MS = 90000;
+const $ = id => document.getElementById(id);
+const screens = ['standby', 'quiz', 'calc', 'result', 'all'];
+let state = { i: 0, e: 0, s: 0 }, idleId = null, typeTimers = [];
+
+function show(id) { screens.forEach(s => $(s).hidden = s !== id); window.scrollTo(0, 0); }
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function clearTypes() { typeTimers.forEach(clearTimeout); typeTimers = []; }
+function typeLines(el, lines, gap, done) {
+  clearTypes(); el.innerHTML = '';
+  lines.forEach((t, k) => typeTimers.push(setTimeout(() => { const p = document.createElement('p'); p.textContent = t; el.appendChild(p); if (k === lines.length - 1 && done) typeTimers.push(setTimeout(done, gap)); }, gap * k)));
+}
+
+function standby() {
+  clearTimeout(idleId); show('standby');
+  typeLines($('bootLines'), ['考勤系統啟動中…', '讀取玩家編號… NO.' + String(Math.floor(Math.random() * 9000) + 1000), '偵測到「社會期待」模組已預先安裝', '準備進行 10 項社會相容性檢測'], 700);
+}
+
+function start() { state = { i: 0, e: 0, s: 0 }; show('quiz'); renderQ(); }
+
+function renderQ() {
+  const q = QS[state.i];
+  $('holes').innerHTML = QS.map((_, k) => `<i class="${k < state.i ? 'done' : k === state.i ? 'now' : ''}"></i>`).join('');
+  $('axisTag').textContent = (q.a === 'e' ? 'EXP 大人經驗值' : 'SCRIPT 劇本服從度') + '　' + String(state.i + 1).padStart(2, '0') + ' / ' + QS.length;
+  $('qNum').textContent = 'Q' + String(state.i + 1).padStart(2, '0');
+  $('qText').textContent = q.q;
+  $('roast').hidden = true;
+  $('opts').innerHTML = '';
+  shuffle(q.o).forEach(o => {
+    const b = document.createElement('button'); b.className = 'opt'; b.textContent = o[0];
+    b.addEventListener('click', () => pick(o, b)); $('opts').appendChild(b);
+  });
+}
+
+function lock() { $('opts').querySelectorAll('button').forEach(b => b.disabled = true); }
+function pick(o, btn) { lock(); btn.classList.add('picked'); add(o[1]); roast(o[2]); }
+function add(n) { QS[state.i].a === 'e' ? state.e += n : state.s += n; }
+function roast(t, label) {
+  const r = $('roast'); r.innerHTML = `<span>${label || 'SYSTEM MESSAGE'}</span>`; r.append(t); r.hidden = false;
+  setTimeout(() => { state.i++; state.i < QS.length ? renderQ() : calc(); }, ROAST_MS);
+}
+
+function calc() {
+  show('calc');
+  typeLines($('calcLines'), ['計算大人經驗值… ' + state.e + ' / 15', '比對社會標準劇本… ' + state.s + ' / 15', '查詢同關卡玩家…', '角色生成完成。'], 650, result);
+}
+
+function counts() { try { return JSON.parse(localStorage.getItem('rsjlz-counts') || '{}'); } catch (e) { return null; } }
+function saveCount(k) { const c = counts(); if (!c) return null; c[k] = (c[k] || 0) + 1; try { localStorage.setItem('rsjlz-counts', JSON.stringify(c)); } catch (e) { return null; } return c; }
+function stars(n) { return `<b>${'★'.repeat(n)}</b><span>${'★'.repeat(5 - n)}</span>`; }
+function typeOf(e, s) { return GRID[e <= 5 ? 0 : e <= 10 ? 1 : 2][s <= 7 ? 0 : 1]; }
+function eLabel(e) { return e <= 5 ? '還沒上線' : e <= 10 ? '已經上線' : '老玩家'; }
+function sLabel(s) { return s <= 7 ? '我自己的節奏' : '照劇本跑'; }
+
+function mapHTML(key, e, s) {
+  const rows = [GRID[2], GRID[1], GRID[0]];
+  const cells = rows.map(r => r.map(k => `<div class="cell${k === key ? ' me' : ''}">${TYPES[k].name}</div>`).join('')).join('');
+  const pin = e == null ? '' : `<span class="pin" style="left:${(s + .5) / 16 * 100}%;top:${100 - (e + .5) / 16 * 100}%" aria-hidden="true"></span>`;
+  return `<div class="mapbox">
+    <div class="axis-y mono"><span>↑ 大人經驗值 高</span><span>${e == null ? '' : 'YOU ARE HERE'}</span></div>
+    <div class="map" role="img" aria-label="兩軸地圖，你位於${TYPES[key].name}">${cells}${pin}</div>
+    <div class="axis-x mono"><span>← 我自己的節奏</span><span>照劇本跑 →</span></div>
+  </div>`;
+}
+
+function detailHTML(key, e, s) {
+  const t = TYPES[key], p = TYPES[t.partner[0]], r = TYPES[t.rival[0]];
+  const live = e != null;
+  let peers = '';
+  if (live) {
+    const c = saveCount(key);
+    if (c) { const total = Object.values(c).reduce((a, b) => a + b, 0); const pct = Math.round(c[key] / total * 100);
+      peers = `<div class="peers"><span class="pct">${pct}%</span><p>在這台機器測過的 ${total} 位玩家中，<br>有 ${c[key]} 位跟你卡在同一關。</p></div>`; }
+    else peers = `<div class="peers"><p>你不是一個人卡在這一關。</p></div>`;
+  }
+  return `
+  <div class="res-hero">
+    <div class="res-id">
+      <div class="row"><span class="code">${t.code}</span><span class="emblem" aria-hidden="true">${ORDER.map(k => `<i class="${k === key ? 'on' : ''}"></i>`).join('')}</span></div>
+      <p class="mono" style="color:var(--earth);margin:0">${live ? '你的人生角色是' : '人格檔案'}</p>
+      <h2 class="res-name">${t.name}</h2>
+      <p class="tagline"><mark>${t.tag}</mark></p>
+      ${live ? `<div class="why">你的<b>大人經驗值 ${e} / 15</b>（${eLabel(e)}），<b>劇本服從度 ${s} / 15</b>（${sLabel(s)}）。<br>${t.why}所以你是<b>${t.name}</b>。</div>` : `<div class="why">${t.why}</div>`}
+      ${peers}
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+      ${mapHTML(key, live ? e : null, live ? s : null)}
+      ${live ? `<div class="bars">
+        <div class="bar"><span>大人經驗值</span><span class="track"><i style="width:${e / 15 * 100}%"></i></span><span class="num">${e}/15</span></div>
+        <div class="bar"><span>劇本服從度</span><span class="track"><i style="width:${s / 15 * 100}%"></i></span><span class="num">${s}/15</span></div>
+      </div>` : ''}
+    </div>
+  </div>
+  <div class="sheet">
+    <div class="blk wide"><span class="mono">角色簡介 PROFILE</span><p>${t.intro}</p></div>
+    <div class="blk"><span class="mono">屬性 STATS</span><div class="stat">${t.stats.map(x => `<span>${x[0]}</span><span class="stars">${stars(x[1])}</span>`).join('')}</div></div>
+    <div class="blk"><span class="mono">招式 SKILL</span><span class="skill-name">【${t.skill[0]}】</span><p>${t.skill[1]}</p></div>
+    <div class="blk"><span class="mono">弱點 WEAKNESS</span><p>${t.weak}</p></div>
+    <div class="blk"><span class="mono">口頭禪 CATCHPHRASE</span><p>${t.line}</p></div>
+    <div class="blk"><span class="mono">天生搭檔 PARTNER</span><span class="chip">${p.name}</span><p>${t.partner[1]}</p></div>
+    <div class="blk"><span class="mono">天敵 RIVAL</span><span class="chip">${r.name}</span><p>${t.rival[1]}</p></div>
+    <div class="blk"><span class="mono">下一關 NEXT STAGE</span><p style="font-weight:700">${t.next}</p></div>
+    <div class="blk dark wide" style="grid-column:1 / -1"><span class="mono">過期雞湯 EXPIRED CHICKEN SOUP</span><p class="soup">${t.soup}</p></div>
+  </div>`;
+}
+
+function result() {
+  const key = typeOf(state.e, state.s);
+  $('resultWrap').innerHTML = detailHTML(key, state.e, state.s) + `
+    <div class="cta"><p>請拿著這個畫面到櫃檯領取你的身分卡 →</p><button class="btn" id="againBtn">下一位玩家</button></div>
+    <p class="mono reset-note">90 秒後自動回到待機畫面</p>`;
+  $('againBtn').addEventListener('click', standby);
+  show('result');
+  clearTimeout(idleId); idleId = setTimeout(standby, IDLE_MS);
+}
+
+function showType(key) {
+  clearTimeout(idleId);
+  $('resultWrap').innerHTML = `<div class="toplink"><span class="mono" style="color:var(--earth)">CHARACTER INDEX</span><button class="link" id="backAll">← 回到六種人格</button></div>` + detailHTML(key);
+  $('backAll').addEventListener('click', () => show('all'));
+  show('result');
+}
+
+$('grid6').innerHTML = ORDER.map(k => { const t = TYPES[k]; return `<button class="tcard" data-k="${k}"><span class="code">${t.code}</span><h3>${t.name}</h3><p>${t.tag}</p></button>`; }).join('');
+$('grid6').addEventListener('click', ev => { const b = ev.target.closest('.tcard'); if (b) showType(b.dataset.k); });
+$('startBtn').addEventListener('click', start);
+$('toAll').addEventListener('click', () => { clearTypes(); show('all'); });
+$('allBack').addEventListener('click', standby);
+standby();
+</script>
+
+</body></html>
